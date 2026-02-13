@@ -1,205 +1,122 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Number Memory Game</title>
-
-<style>
-body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
-    margin: 0;
-    padding: 20px;
-}
-
-.container {
-    max-width: 500px;
-    margin: auto;
-}
-
-h1 {
-    margin-top: 10px;
-}
-
-#stats {
-    display: flex;
-    justify-content: space-between;
-    margin: 15px 0;
-    font-size: 18px;
-}
-
-#numberDisplay {
-    font-size: 42px;
-    font-weight: bold;
-    margin: 25px 0;
-    letter-spacing: 4px;
-}
-
-#timerBarContainer {
-    width: 100%;
-    height: 12px;
-    background: rgba(255,255,255,0.3);
-    border-radius: 10px;
-    overflow: hidden;
-    margin-bottom: 15px;
-}
-
-#timerBar {
-    height: 100%;
-    width: 100%;
-    background: #00ffcc;
-    transition: width linear;
-}
-
-input {
-    width: 90%;
-    padding: 12px;
-    font-size: 18px;
-    text-align: center;
-    border-radius: 8px;
-    border: none;
-    margin-bottom: 10px;
-}
-
-button {
-    width: 95%;
-    padding: 12px;
-    font-size: 18px;
-    border-radius: 8px;
-    border: none;
-    background: #00ffcc;
-    color: black;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-button:hover {
-    background: #00ddb3;
-}
-
-#message {
-    margin-top: 15px;
-    font-size: 18px;
-    min-height: 24px;
-}
-
-@media (max-width: 500px) {
-    #numberDisplay {
-        font-size: 32px;
-    }
-}
-</style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Memory Game</title>
+    <script src="https://isaiahnoelsalazar.github.io/js/ECStyleSheet.js"></script>
 </head>
 
-<body>
+<body class="fontFamily-Arial textAlign-center background-linear-gradient(135deg,#667eea,#764ba2) color-white margin-0 padding-20px">
 
-<div class="container">
-    <h1>Number Memory Game</h1>
+    <div class="container maxWidth-500px margin-auto">
+        <h1 class="marginTop-10px">Number Memory Game</h1>
 
-    <div id="stats">
-        <div>Level: <span id="level">1</span></div>
-        <div>Score: <span id="score">0</span></div>
-        <div>High Score: <span id="highScore">0</span></div>
+        <div id="stats" class="display-flex flexDirection-column gap-8px justifyContent-center marginTop-15px marginBottom-15px fontSize-18px width-100%">
+            <div>High Score: <span id="highScore">0</span></div>
+            <div>Level: <span id="level">1</span></div>
+        </div>
+
+        <div id="timerBarContainer" class="width-100% height-12px background-rgba(255,255,255,0.3) borderRadius-10px overflow-hidden marginBottom-15px">
+            <div id="timerBar" class="height-100% width-100% background-#00ffcc transition-width_linear"></div>
+        </div>
+
+        <div id="numberDisplay" class="fontSize-42px fontWeight-bold margin-25px_0 letterSpacing-4px mobile:fontSize-32px"></div>
+
+        <div id="inputArea" class="display-none">
+            <input type="text" id="userInput" placeholder="Enter the number" class="width-90% padding-12px fontSize-18px textAlign-center borderRadius-8px border-none marginBottom-10px color-black" />
+            <button onclick="checkAnswer()" class="width-95% padding-12px fontSize-18px borderRadius-8px border-none background-#00ffcc color-black fontWeight-bold cursor-pointer hover:background-#00ddb3">Submit</button>
+        </div>
+
+        <div id="message" class="marginTop-15px fontSize-18px minHeight-24px"></div>
+
+        <button id="startBtn" onclick="startGame()" class="width-95% padding-12px fontSize-18px borderRadius-8px border-none background-#00ffcc color-black fontWeight-bold cursor-pointer hover:background-#00ddb3">Start Game</button>
     </div>
 
-    <div id="timerBarContainer">
-        <div id="timerBar"></div>
-    </div>
+    <script>
+        let currentNumber = "";
+        let level = 1;
+        let score = 0;
+        let highScore = localStorage.getItem("highScore") || 0;
 
-    <div id="numberDisplay"></div>
+        document.getElementById("highScore").textContent = highScore;
 
-    <div id="inputArea" style="display:none;">
-        <input type="text" id="userInput" placeholder="Enter the number" />
-        <button onclick="checkAnswer()">Submit</button>
-    </div>
-
-    <div id="message"></div>
-
-    <button onclick="startGame()">Start Game</button>
-</div>
-
-<script>
-let currentNumber = "";
-let level = 1;
-let score = 0;
-let highScore = localStorage.getItem("highScore") || 0;
-
-document.getElementById("highScore").textContent = highScore;
-
-function generateNumber(length) {
-    let num = "";
-    for (let i = 0; i < length; i++) {
-        num += Math.floor(Math.random() * 10);
-    }
-    return num;
-}
-
-function startGame() {
-    document.getElementById("message").textContent = "";
-    document.getElementById("inputArea").style.display = "none";
-    document.getElementById("level").textContent = level;
-
-    currentNumber = generateNumber(level);
-    const display = document.getElementById("numberDisplay");
-    display.textContent = currentNumber;
-
-    startTimer(level / 2);
-
-    setTimeout(() => {
-        display.textContent = "";
-        document.getElementById("inputArea").style.display = "block";
-        document.getElementById("userInput").value = "";
-        document.getElementById("userInput").focus();
-    }, (level / 2) * 1000);
-}
-
-function startTimer(seconds) {
-    const timerBar = document.getElementById("timerBar");
-    timerBar.style.transition = "none";
-    timerBar.style.width = "100%";
-
-    setTimeout(() => {
-        timerBar.style.transition = `width ${seconds}s linear`;
-        timerBar.style.width = "0%";
-    }, 50);
-}
-
-function checkAnswer() {
-    const userInput = document.getElementById("userInput").value;
-
-    if (userInput === currentNumber) {
-        score += level * 10;
-        level++;
-
-        document.getElementById("score").textContent = score;
-        document.getElementById("message").textContent = "Correct!";
-
-        if (score > highScore) {
-            highScore = score;
-            localStorage.setItem("highScore", highScore);
-            document.getElementById("highScore").textContent = highScore;
+        function generateNumber(length) {
+            let num = "";
+            for (let i = 0; i < length; i++) {
+                num += Math.floor(Math.random() * 10);
+            }
+            return num;
         }
 
-        setTimeout(startGame, 1000);
+        function startGame() {
+            document.getElementById("message").textContent = "";
+            
+            // Switch classes instead of direct style manipulation
+            const inputArea = document.getElementById("inputArea");
+            inputArea.classList.remove("display-block");
+            inputArea.classList.add("display-none");
+            
+            document.getElementById("level").textContent = level;
 
-    } else {
-        document.getElementById("message").textContent =
-            "Wrong! The correct number was " + currentNumber;
+            currentNumber = generateNumber(level);
+            const display = document.getElementById("numberDisplay");
+            display.textContent = currentNumber;
 
-        level = 1;
-        score = 0;
-        document.getElementById("score").textContent = score;
-    }
-}
+            startTimer(level / 2);
 
-document.getElementById("userInput").addEventListener("keyup", function(event) {
-    if (event.key === "Enter") {
-        checkAnswer();
-    }
-});
-</script>
+            setTimeout(() => {
+                display.textContent = "";
+                inputArea.classList.remove("display-none");
+                inputArea.classList.add("display-block");
+                document.getElementById("userInput").value = "";
+                document.getElementById("userInput").focus();
+            }, (level / 2) * 1000);
+        }
 
+        function startTimer(seconds) {
+            const timerBar = document.getElementById("timerBar");
+            timerBar.style.transition = "none";
+            timerBar.style.width = "100%";
+
+            setTimeout(() => {
+                timerBar.style.transition = `width ${seconds}s linear`;
+                timerBar.style.width = "0%";
+            }, 50);
+        }
+
+        function checkAnswer() {
+            const userInput = document.getElementById("userInput").value;
+
+            if (userInput === currentNumber) {
+                score += level;
+                level++;
+
+                document.getElementById("message").textContent = "Correct!";
+
+                if (score > highScore) {
+                    highScore = score;
+                    localStorage.setItem("highScore", highScore);
+                    document.getElementById("highScore").textContent = highScore;
+                }
+
+                setTimeout(startGame, 1000);
+
+            } else {
+                document.getElementById("message").textContent =
+                    "Wrong! The correct number was " + currentNumber;
+
+                level = 1;
+                score = 0;
+                
+                // Show start button again if desired, or keep logic simple
+            }
+        }
+
+        document.getElementById("userInput").addEventListener("keyup", function(event) {
+            if (event.key === "Enter") {
+                checkAnswer();
+            }
+        });
+    </script>
 </body>
 </html>
